@@ -273,7 +273,8 @@ public final class DockerCliExecBackend implements ExecBackend, AutoCloseable {
 		}
 		argv.add(this.containerId);
 		// PID-recording wrapper, then the configured shell runs the actual command.
-		// Everything is passed as argv elements - no host-side quoting is involved.
+		// Everything is passed as argv elements; on Windows the JDK joins them into one
+		// command line, so WindowsCommandLine keeps arguments with quotes intact.
 		argv.add(this.shellCommand.get(0));
 		argv.add("-c");
 		argv.add(PID_WRAPPER);
@@ -281,7 +282,7 @@ public final class DockerCliExecBackend implements ExecBackend, AutoCloseable {
 		argv.add(pidFile);
 		argv.addAll(this.shellCommand);
 		argv.add(spec.command());
-		return new ProcessBuilder(argv).start();
+		return new ProcessBuilder(WindowsCommandLine.prepare(argv)).start();
 	}
 
 	/**
@@ -321,7 +322,7 @@ public final class DockerCliExecBackend implements ExecBackend, AutoCloseable {
 	 */
 	private static ControlResult execLocal(List<String> argv, long timeoutMillis) {
 		try {
-			Process process = new ProcessBuilder(argv).start();
+			Process process = new ProcessBuilder(WindowsCommandLine.prepare(argv)).start();
 			StringBuilder stdout = new StringBuilder();
 			StringBuilder stderr = new StringBuilder();
 			Thread outReader = drain(process.getInputStream(), stdout);
