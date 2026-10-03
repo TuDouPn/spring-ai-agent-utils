@@ -34,8 +34,9 @@ public class AgentUtilsRuntimeHints implements RuntimeHintsRegistrar {
 		hints.resources().registerPattern("agent/*.md");
 		hints.resources().registerPattern("prompt/*.md");
 
-		// User-provided skills — conventional classpath location
+		// User-provided skills — conventional classpath locations
 		hints.resources().registerPattern("META-INF/skills/**/*.md");
+		hints.resources().registerPattern(".claude/skills/**/*.md");
 
 		// Reflection for SkillsTool inner types used via tool invocation
 		hints.reflection().registerType(SkillsTool.SkillsInput.class, MemberCategory.values());

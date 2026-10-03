@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import org.springaicommunity.agent.tools.SkillsTool.Skill;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -203,10 +204,19 @@ public class Skills {
 			for (Resource skillResource : resources) {
 				try (InputStream is = skillResource.getInputStream()) {
 					// Filesystem entries get a plain directory path, as loadDirectory does,
-					// so the model can use it with the file and shell tools.
-					String basePath = skillResource.isFile()
-							? skillResource.getFile().toPath().toAbsolutePath().getParent().toString()
-							: deriveBasePathFromUrl(skillResource.getURL());
+					// so the model can use it with the file and shell tools. Path-based, so
+					// it also works on non-default file systems such as the resource: file
+					// system of a GraalVM native image, where getFile() is unsupported.
+					String basePath;
+					if (skillResource instanceof FileSystemResource fileSystemResource) {
+						basePath = fileSystemResource.getFilePath().toAbsolutePath().getParent().toString();
+					}
+					else if (skillResource.isFile()) {
+						basePath = skillResource.getFile().toPath().toAbsolutePath().getParent().toString();
+					}
+					else {
+						basePath = deriveBasePathFromUrl(skillResource.getURL());
+					}
 					skills.add(parseSkill(is, basePath));
 				}
 			}

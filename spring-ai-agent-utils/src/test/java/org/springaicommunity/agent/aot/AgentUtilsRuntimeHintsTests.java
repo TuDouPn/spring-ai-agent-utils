@@ -64,6 +64,8 @@ class AgentUtilsRuntimeHintsTests {
 			.accepts(this.hints);
 		assertThat(RuntimeHintsPredicates.resource().forResource("META-INF/skills/nested/dir/SKILL.md"))
 			.accepts(this.hints);
+		assertThat(RuntimeHintsPredicates.resource().forResource(".claude/skills/my-skill/SKILL.md"))
+			.accepts(this.hints);
 	}
 
 	@Test
