@@ -252,6 +252,20 @@ public SkillsTool skillsTool() {
 }
 ```
 
+### Registering Skills Programmatically
+
+Skills that are not packaged as `SKILL.md` files (for example generated at runtime, or loaded from a database or configuration service) can be registered directly with `addSkill(name, description, content)`. They can be combined with skills loaded from directories and resources:
+
+```java
+SkillsTool skillsTool = SkillsTool.builder()
+    .addSkillsResource(new ClassPathResource("META-INF/skills"))
+    .addSkill("release-notes", "Drafts release notes from merged pull requests",
+            releaseNotesInstructions)
+    .build();
+```
+
+Programmatic skills have no base directory, so when the model invokes one, the skill content is returned as is.
+
 ### Loading from Classpath JARs (SkillsJars)
 
 Skills can be packaged inside JAR files and distributed as Maven/Gradle dependencies — referred to as **SkillsJars**. This allows teams to share reusable skill libraries across projects.

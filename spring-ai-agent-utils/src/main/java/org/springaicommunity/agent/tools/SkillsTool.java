@@ -155,9 +155,10 @@ public class SkillsTool {
 
 		/**
 		 * Registers a skill programmatically, bypassing filesystem and classpath
-		 * resource resolution. Useful in environments where the built-in scanners
-		 * cannot reach the SKILL.md files (for example Spring Boot executable jars
-		 * using the {@code jar:nested:} protocol, or GraalVM native images).
+		 * resource resolution. Useful for skills that are not packaged as SKILL.md files
+		 * (for example generated at runtime or loaded from a database or configuration
+		 * service). Programmatic skills have no base directory, so the skill content is
+		 * returned to the model as is.
 		 * @param name the skill name (the invocation key used by the model)
 		 * @param description a short description of the skill
 		 * @param content the skill instructions

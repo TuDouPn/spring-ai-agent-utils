@@ -337,5 +337,20 @@ class SkillsToolTest {
 			assertThat(result).doesNotContain("Base directory for this skill:");
 		}
 
+		@Test
+		@DisplayName("should combine programmatic and resource skills in one tool")
+		void shouldCombineProgrammaticAndResourceSkills() {
+			ToolCallback callback = SkillsTool.builder()
+				.addSkillsResource(new ClassPathResource("META-INF/skills"))
+				.addSkill("my-skill", "A programmatic skill", "This is the skill content.")
+				.build();
+
+			assertThat(callback.getToolDefinition().description()).contains("my-skill", "spring-boot-skill");
+
+			assertThat(callback.call("{\"command\":\"my-skill\"}")).isEqualTo("\"This is the skill content.\"");
+			assertThat(callback.call("{\"command\":\"spring-boot-skill\"}"))
+				.startsWith("\"Base directory for this skill: META-INF/skills/");
+		}
+
 	}
 }
