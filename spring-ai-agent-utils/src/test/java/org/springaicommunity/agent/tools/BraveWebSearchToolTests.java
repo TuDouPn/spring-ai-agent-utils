@@ -179,6 +179,22 @@ class BraveWebSearchToolTests {
 		}
 
 		@Test
+		@DisplayName("Should apply blocked domains on top of allowed domains")
+		void shouldApplyBlockedDomainsOnTopOfAllowedDomains() {
+			this.expectSearchRequest();
+
+			// docs.spring.io matches the allowed parent domain but is explicitly blocked
+			String result = this.tool.webSearch("test query", List.of("spring.io", "example.com"),
+					List.of("docs.spring.io"));
+
+			assertThat(result).isEqualTo(JsonParser.toJson(List.of(
+				new BraveWebSearchTool.SearchResult("Spring AI", "https://spring.io/projects/spring-ai",
+					"Spring AI project"),
+				new BraveWebSearchTool.SearchResult("Example", "https://example.com/spring-ai",
+					"Unrelated result"))));
+		}
+
+		@Test
 		@DisplayName("Should handle empty domain lists")
 		void shouldHandleEmptyDomainLists() {
 			this.expectSearchRequest();
