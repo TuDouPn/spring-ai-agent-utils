@@ -26,6 +26,11 @@ import org.junit.jupiter.api.Test;
 import org.springaicommunity.agent.tools.TodoWriteTool.Todos;
 import org.springaicommunity.agent.tools.TodoWriteTool.Todos.Status;
 import org.springaicommunity.agent.tools.TodoWriteTool.Todos.TodoItem;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+
+import org.springframework.ai.support.ToolCallbacks;
+import org.springframework.ai.tool.ToolCallback;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -340,6 +345,44 @@ class TodoWriteToolTest {
 			String result = TodoWriteToolTest.this.tool.todoWrite(items4);
 
 			assertThat(result).contains("Todos have been modified successfully");
+		}
+
+	}
+
+	@Nested
+	@DisplayName("ToolCallback Tests")
+	class ToolCallbackTests {
+
+		private ToolCallback toolCallback() {
+			return ToolCallbacks.from(TodoWriteToolTest.this.tool)[0];
+		}
+
+		@Test
+		@DisplayName("Should expose todos as a flat array in the input schema")
+		void shouldExposeTodosAsFlatArrayInInputSchema() {
+			JsonNode schema = JsonMapper.shared().readTree(toolCallback().getToolDefinition().inputSchema());
+
+			JsonNode todos = schema.path("properties").path("todos");
+
+			assertThat(todos.path("type").asString()).isEqualTo("array");
+			assertThat(todos.path("items").path("properties").propertyNames()).containsExactlyInAnyOrder("content",
+					"status", "activeForm");
+		}
+
+		@Test
+		@DisplayName("Should accept a flat todos payload through the ToolCallback")
+		void shouldAcceptFlatTodosPayload() {
+			String result = toolCallback().call("""
+					{"todos": [
+						{"content": "Fix bug", "status": "completed", "activeForm": "Fixing bug"},
+						{"content": "Add test", "status": "in_progress", "activeForm": "Adding test"}
+					]}
+					""");
+
+			assertThat(result).contains("Todos have been modified successfully");
+			assertThat(TodoWriteToolTest.this.capturedTodos.get().todos()).containsExactly(
+					new TodoItem("Fix bug", Status.completed, "Fixing bug"),
+					new TodoItem("Add test", Status.in_progress, "Adding test"));
 		}
 
 	}

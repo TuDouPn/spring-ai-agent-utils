@@ -414,13 +414,11 @@ Structured task list management for AI coding sessions. Helps AI agents track pr
 TodoWriteTool todoTool = TodoWriteTool.builder().build();
 
 // Create and manage task list
-Todos todos = new Todos(List.of(
+todoTool.todoWrite(List.of(
     new TodoItem("Read configuration", Status.completed, "Reading configuration"),
     new TodoItem("Parse settings", Status.in_progress, "Parsing settings"),
     new TodoItem("Validate config", Status.pending, "Validating config")
 ));
-
-todoTool.todoWrite(todos);
 ```
 
 ### TaskTools - Extensible Sub-Agent System
