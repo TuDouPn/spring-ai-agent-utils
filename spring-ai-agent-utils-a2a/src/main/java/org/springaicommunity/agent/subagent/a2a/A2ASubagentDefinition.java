@@ -16,7 +16,10 @@
 package org.springaicommunity.agent.subagent.a2a;
 
 
+import java.util.Objects;
+
 import io.a2a.spec.AgentCard;
+import io.a2a.spec.AgentSkill;
 import org.springaicommunity.agent.common.task.subagent.SubagentDefinition;
 import org.springaicommunity.agent.common.task.subagent.SubagentReference;
 
@@ -35,9 +38,12 @@ public class A2ASubagentDefinition implements SubagentDefinition {
 
 	private final AgentCard card;
 
+	private final String description;
+
 	public A2ASubagentDefinition(SubagentReference subagentRef, AgentCard card) {
-		this.subagentRef = subagentRef;
-		this.card = card;
+		this.subagentRef = Objects.requireNonNull(subagentRef, "subagentRef must not be null");
+		this.card = Objects.requireNonNull(card, "card must not be null");
+		this.description = buildDescription(card);
 	}
 
 	@Override
@@ -47,7 +53,7 @@ public class A2ASubagentDefinition implements SubagentDefinition {
 
 	@Override
 	public String getDescription() {
-		return card.description(); // TODO include more details like skills?
+		return this.description;
 	}
 
 	@Override
@@ -62,6 +68,26 @@ public class A2ASubagentDefinition implements SubagentDefinition {
 
 	public AgentCard getAgentCard() {
 		return card;
+	}
+
+	/**
+	 * Builds the description from the card description and its skills. Skills are
+	 * indented so they read as part of this agent's entry in the Task tool's agent list,
+	 * and listed under "Can help with" rather than "Skills" so the model does not confuse
+	 * them with Agent Skills invoked through the Skill tool.
+	 */
+	private static String buildDescription(AgentCard card) {
+		StringBuilder sb = new StringBuilder(card.description());
+		if (!card.skills().isEmpty()) {
+			sb.append("\n  Can help with:");
+			for (AgentSkill skill : card.skills()) {
+				sb.append("\n  - ").append(skill.name()).append(": ").append(skill.description());
+				if (skill.examples() != null && !skill.examples().isEmpty()) {
+					sb.append("\n    Examples: ").append(String.join("; ", skill.examples()));
+				}
+			}
+		}
+		return sb.toString();
 	}
 
 }
