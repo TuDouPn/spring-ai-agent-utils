@@ -73,6 +73,11 @@ class ToolCallListenersTest {
 			return this.errorReport;
 		}
 
+		@Override
+		public void afterCompletion(Object context, String toolName, String toolInput) {
+			this.log.add("completion:" + toolName + ":" + context);
+		}
+
 	}
 
 	@Test
@@ -83,7 +88,8 @@ class ToolCallListenersTest {
 		String result = wrapped.call("{\"text\":\"hi\"}");
 
 		assertThat(result).isEqualTo("\"echo: hi\"");
-		assertThat(listener.log).containsExactly("before:Echo", "after:Echo:ctx-Echo:\"echo: hi\"");
+		assertThat(listener.log).containsExactly("before:Echo", "after:Echo:ctx-Echo:\"echo: hi\"",
+				"completion:Echo:ctx-Echo");
 	}
 
 	@Test
@@ -95,7 +101,8 @@ class ToolCallListenersTest {
 		String result = wrapped.call("{\"text\":\"x\"}");
 
 		assertThat(result).isEqualTo("Tool 'Boom' failed: kaboom");
-		assertThat(listener.log).contains("error:Boom:ctx-Boom:kaboom");
+		assertThat(listener.log).containsExactly("before:Boom", "error:Boom:ctx-Boom:kaboom",
+				"completion:Boom:ctx-Boom");
 	}
 
 	@Test
@@ -104,7 +111,8 @@ class ToolCallListenersTest {
 		ToolCallback wrapped = ToolCallListeners.wrap(failingTool(), listener);
 
 		assertThatThrownBy(() -> wrapped.call("{\"text\":\"x\"}")).hasMessageContaining("kaboom");
-		assertThat(listener.log).contains("error:Boom:ctx-Boom:kaboom");
+		assertThat(listener.log).containsExactly("before:Boom", "error:Boom:ctx-Boom:kaboom",
+				"completion:Boom:ctx-Boom");
 	}
 
 	@Test
@@ -126,6 +134,40 @@ class ToolCallListenersTest {
 		assertThat(wrapped).hasSize(2);
 		wrapped.forEach(callback -> callback.call("{\"text\":\"a\"}"));
 		assertThat(listener.log).filteredOn(entry -> entry.startsWith("before:")).hasSize(2);
+	}
+
+	@Test
+	void afterCompletionRunsEvenWhenTheToolThrowsAnError() {
+		RecordingListener listener = new RecordingListener();
+		ToolCallback erroring = FunctionToolCallback.builder("Fatal", (Function<EchoInput, String>) input -> {
+			throw new StackOverflowError("fatal");
+		}).description("Always errors").inputType(EchoInput.class).build();
+		ToolCallback wrapped = ToolCallListeners.wrap(erroring, listener);
+
+		assertThatThrownBy(() -> wrapped.call("{\"text\":\"x\"}")).isInstanceOf(StackOverflowError.class);
+		// onError only handles RuntimeException; cleanup still runs
+		assertThat(listener.log).containsExactly("before:Fatal", "completion:Fatal:ctx-Fatal");
+	}
+
+	@Test
+	void afterCompletionIsNotCalledWhenBeforeCallThrows() {
+		List<String> log = new ArrayList<>();
+		ToolCallback wrapped = ToolCallListeners.wrap(echoTool(), new ToolCallListener() {
+
+			@Override
+			public Object beforeCall(String toolName, String toolInput) {
+				throw new IllegalStateException("not allowed");
+			}
+
+			@Override
+			public void afterCompletion(Object context, String toolName, String toolInput) {
+				log.add("completion");
+			}
+
+		});
+
+		assertThatThrownBy(() -> wrapped.call("{\"text\":\"hi\"}")).hasMessageContaining("not allowed");
+		assertThat(log).isEmpty();
 	}
 
 	@Test
