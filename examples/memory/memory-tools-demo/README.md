@@ -165,7 +165,7 @@ agent.model.knowledge.cutoff=2025-08-01
 ```xml
 <dependency>
     <groupId>org.springframework.ai</groupId>
-    <artifactId>spring-ai-starter-model-openai-sdk</artifactId>
+    <artifactId>spring-ai-starter-model-openai</artifactId>
 </dependency>
 ```
 ```properties

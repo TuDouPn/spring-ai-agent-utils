@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 
 @SpringBootApplication
 public class Application {
@@ -45,6 +46,10 @@ public class Application {
 
 		return args -> {
 			// @formatter:off
+			// Brave web search is optional: register it only when BRAVE_API_KEY is set
+			List<Object> webSearchTools = StringUtils.hasText(braveApiKey)
+					? List.of(BraveWebSearchTool.builder(braveApiKey).resultCount(15).build()) : List.of();
+
 			ChatClient chatClient = chatClientBuilder
 				.defaultSystem(p -> p.text(systemPrompt) // system prompt
 					.param(AgentEnvironment.ENVIRONMENT_INFO_KEY, AgentEnvironment.info())
@@ -72,8 +77,10 @@ public class Application {
 					ShellTools.builder().build(), // needed by the skills to execute scripts
 					FileSystemTools.builder().build(),// needed by the skills to read/write additional resources
 					SmartWebFetchTool.builder(chatClientBuilder.clone().build()).build(),
-					BraveWebSearchTool.builder(braveApiKey).resultCount(15).build(),				
 					GrepTool.builder().build())
+
+				// Optional web search tool
+				.defaultTools(webSearchTools.toArray())
 
 				// Advisors
 				.defaultAdvisors(
