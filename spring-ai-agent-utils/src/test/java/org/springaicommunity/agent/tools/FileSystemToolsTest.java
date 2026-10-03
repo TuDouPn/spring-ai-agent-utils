@@ -63,6 +63,7 @@ class FileSystemToolsTest {
 			assertThat(tool.description()).contains("binary files, including PDFs, images, and office documents, are not decoded");
 			assertThat(tool.description()).doesNotContain("Claude Code");
 			assertThat(tool.description()).doesNotContain("Jupyter notebooks");
+			assertThat(tool.description()).doesNotContain("system reminder");
 		}
 
 		@Test

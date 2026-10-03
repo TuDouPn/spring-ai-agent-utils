@@ -92,7 +92,7 @@ public class FileSystemTools {
 		- You can optionally specify a line offset and limit (especially handy for long files), but it's recommended to read the whole file by not providing these parameters
 		- Any lines longer than 2000 characters will be truncated
 		- This tool can only read files, not directories
-		- If you read a file that exists but has empty contents you will receive a system reminder warning in place of file contents.
+		- If the file exists but is empty, a "File is empty" message is returned instead of contents
 		""")
 	public String read(
 		@ToolParam(description = "The absolute path to the file to read") String filePath,
