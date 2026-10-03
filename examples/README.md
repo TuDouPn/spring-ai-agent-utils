@@ -48,6 +48,14 @@ Demonstrates the `TodoWriteTool` for structured task management in agents. Shows
 
 See the [Todo Demo README](todo-demo/README.md) for full documentation.
 
+---
+
+### [Observability Demo](observability-demo)
+
+Demonstrates observing and interrupting the agent tool-calling loop: a `ToolCallListener` traces and counts every tool call, and an `InterruptAdvisor` stops a running turn when the user types `/stop` or a tool-call budget is used up.
+
+See the [Observability Demo README](observability-demo/README.md) for full documentation.
+
 ## Prerequisites
 
 All examples require:
