@@ -170,6 +170,7 @@ mvn spring-boot:run
 | `subagent-a2a-demo` | A2A protocol integration for delegating tasks to remote agents |
 | `skills-demo` | SkillsTool system with custom skill development and the ai-tuto example |
 | `ask-user-question-demo` | Interactive agent-user communication with `AskUserQuestionTool` |
+| `observability-demo` | Trace tool calls with a `ToolCallListener` and stop running turns with `InterruptAdvisor` (`/stop` or a tool-call budget) |
 | `memory/memory-tools-demo` | Long-term memory across conversations using dedicated, sandboxed `AutoMemoryTools` (manual setup) |
 | `memory/memory-filesystem-tools-demo` | Long-term memory using general-purpose `FileSystemTools` — no dedicated memory tooling required |
 | `memory/memory-tools-advisor-demo` | Long-term memory via `AutoAutoMemoryToolsAdvisor` — advisor-based setup with consolidation trigger |

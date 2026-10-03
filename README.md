@@ -69,6 +69,11 @@ These are the agent tools needed to implement any agentic behavior
 - **[TodoWriteTool](spring-ai-agent-utils/docs/TodoWriteTool.md)** - Structured task management with state tracking
 - **[TaskTools](spring-ai-agent-utils/docs/TaskTools.md)** - Extensible sub-agent system for delegating complex tasks to specialized agents with multi-model routing and pluggable backends
 
+#### Agent loop control & observability
+
+- **[InterruptAdvisor](docs/tools/InterruptAdvisor.md)** - Cooperative cancellation of a running agent turn: a "stop" button, a deadline or a budget guard stops the tool-calling loop before its next model request
+- **[ToolCallListener](docs/tools/ToolCallListener.md)** - Observe every tool invocation (audit logs, progress streaming, metrics) and choose whether a tool failure is reported to the model or rethrown
+
 While these tools can be used standalone, truly agentic behavior emerges when they are combined. SkillsTool naturally pairs with FileSystemTools and ShellTools to execute domain-specific workflows. BraveWebSearchTool and SmartWebFetchTool provide your AI application with access to real-world information. TaskTools orchestrates complex operations by delegating to specialized sub-agents, each equipped with a tailored subset of these tools.
 
 ### Detailed Documentation
