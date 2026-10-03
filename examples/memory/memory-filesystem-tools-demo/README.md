@@ -189,7 +189,7 @@ agent.model.knowledge.cutoff=2025-08-07
 ## Related Documentation
 
 - [memory-tools-demo](../../memorymemory-tools-demo) — same pattern with dedicated, sandboxed `AutoMemoryTools`
-- [AutoMemoryTools Documentation](../../spring-ai-agent-utils/docs/AutoMemoryTools.md) — full reference for the dedicated tool alternative
-- [FileSystemTools Documentation](../../spring-ai-agent-utils/docs/FileSystemTools.md) — the tools used in this demo
+- [AutoMemoryTools Documentation](../../../docs/tools/AutoMemoryTools.md) — full reference for the dedicated tool alternative
+- [FileSystemTools Documentation](../../../docs/tools/FileSystemTools.md) — the tools used in this demo
 - [Claude Code — Memory](https://code.claude.com/docs/en/memory) — the pattern this demo directly follows
 - [Claude API SDK — Memory Tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool) — the dedicated tool specification

@@ -1,6 +1,6 @@
 # memory-tools-dream-demo
 
-A runnable Spring Boot console agent demonstrating [`AutoDreamAdvisor` / `AutoDreamService`](../../../spring-ai-agent-utils/docs/design/AutoDream-Design.md) — **both Phase 1 and Phase 2 of Auto-Dream** — running an out-of-band memory-consolidation cycle on top of [`AutoMemoryToolsAdvisor`](../../../spring-ai-agent-utils/docs/AutoMemoryToolsAdvisor.md), with cross-session recall backed by `spring-ai-session`.
+A runnable Spring Boot console agent demonstrating [`AutoDreamAdvisor` / `AutoDreamService`](../../../docs/tools/AutoDreamAdvisor.md) — **both Phase 1 and Phase 2 of Auto-Dream** — running an out-of-band memory-consolidation cycle on top of [`AutoMemoryToolsAdvisor`](../../../docs/tools/AutoMemoryToolsAdvisor.md), with cross-session recall backed by `spring-ai-session`.
 
 ## What it demonstrates
 

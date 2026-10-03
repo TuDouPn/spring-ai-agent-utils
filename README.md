@@ -9,7 +9,7 @@ A [Spring AI](https://docs.spring.io/spring-ai/reference/2.0-SNAPSHOT/index.html
 
 ## Overview
 
-<img style="display: block; margin: auto;" align="left" src="./spring-ai-agent-utils/docs/spring-ai-agent-utils-logo.png" width="250" />
+<img style="display: block; margin: auto;" align="left" src="docs/images/spring-ai-agent-utils-logo.png" width="250" />
 
 Spring AI Agent Utils reimplements core Claude Code capabilities as Spring AI tools, enabling sophisticated agentic workflows with file operations, shell execution, web access, task management, and extensible agent skills.
 
@@ -43,31 +43,31 @@ These are the agent tools needed to implement any agentic behavior
 
 #### Core Tools
 
-- **[AgentEnvironment](spring-ai-agent-utils/docs/AgentEnvironment.md)** - Dynamic agent context utility that provides runtime environment information and git repository status to system prompts
-- **[FileSystemTools](spring-ai-agent-utils/docs/FileSystemTools.md)** - Read, write, and edit files with precise control
-- **[ShellTools](spring-ai-agent-utils/docs/ShellTools.md)** - Execute shell commands with timeout control, background process management, and regex output filtering
-- **[GrepTool](spring-ai-agent-utils/docs/GrepTool.md)** - Pure Java grep implementation for code search with regex, glob filtering, and multiple output modes
-- **[GlobTool](spring-ai-agent-utils/docs/GlobTool.md)** - Fast file pattern matching tool for finding files by name patterns with glob syntax
-- **[SmartWebFetchTool](spring-ai-agent-utils/docs/SmartWebFetchTool.md)** - AI-powered web content summarization with caching
-- **[BraveWebSearchTool](spring-ai-agent-utils/docs/BraveWebSearchTool.md)** - Web search with domain filtering
+- **[AgentEnvironment](docs/tools/AgentEnvironment.md)** - Dynamic agent context utility that provides runtime environment information and git repository status to system prompts
+- **[FileSystemTools](docs/tools/FileSystemTools.md)** - Read, write, and edit files with precise control
+- **[ShellTools](docs/tools/ShellTools.md)** - Execute shell commands with timeout control, background process management, and regex output filtering
+- **[GrepTool](docs/tools/GrepTool.md)** - Pure Java grep implementation for code search with regex, glob filtering, and multiple output modes
+- **[GlobTool](docs/tools/GlobTool.md)** - Fast file pattern matching tool for finding files by name patterns with glob syntax
+- **[SmartWebFetchTool](docs/tools/SmartWebFetchTool.md)** - AI-powered web content summarization with caching
+- **[BraveWebSearchTool](docs/tools/BraveWebSearchTool.md)** - Web search with domain filtering
 
 #### User feedback
 
-- **[AskUserQuestionTool](spring-ai-agent-utils/docs/AskUserQuestionTool.md)** - Ask users clarifying questions with multiple-choice options during agent execution
+- **[AskUserQuestionTool](docs/tools/AskUserQuestionTool.md)** - Ask users clarifying questions with multiple-choice options during agent execution
 
 #### Agent Skills
 
-- **[SkillsTool](spring-ai-agent-utils/docs/SkillsTool.md)** - Extend AI agent capabilities with reusable, composable knowledge modules defined in Markdown with YAML front-matter
+- **[SkillsTool](docs/tools/SkillsTool.md)** - Extend AI agent capabilities with reusable, composable knowledge modules defined in Markdown with YAML front-matter
 
 #### Long-term memory
 
-- **[AutoMemoryTools](spring-ai-agent-utils/docs/AutoMemoryTools.md)** - Persistent, file-based long-term memory that survives across conversations. Agents store typed memory files (`user`, `feedback`, `project`, `reference`) in a sandboxed directory and navigate them via a `MEMORY.md` index. Requires the companion `classpath:/prompt/AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md` system prompt (bundled in the jar) to instruct the agent on when and how to use the tools. Inspired by [Claude Code memory](https://code.claude.com/docs/en/memory) and the [Claude API SDK memory tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool).
-- **[AutoMemoryToolsAdvisor](spring-ai-agent-utils/docs/AutoMemoryToolsAdvisor.md)** - A `ChatClient` advisor that wires `AutoMemoryTools` and its companion system prompt into the request pipeline automatically. Eliminates manual tool and prompt registration, deduplicates callbacks, and supports an optional `memoryConsolidationTrigger` to prompt the model to summarise and clean up memories on a schedule.
+- **[AutoMemoryTools](docs/tools/AutoMemoryTools.md)** - Persistent, file-based long-term memory that survives across conversations. Agents store typed memory files (`user`, `feedback`, `project`, `reference`) in a sandboxed directory and navigate them via a `MEMORY.md` index. Requires the companion `classpath:/prompt/AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md` system prompt (bundled in the jar) to instruct the agent on when and how to use the tools. Inspired by [Claude Code memory](https://code.claude.com/docs/en/memory) and the [Claude API SDK memory tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool).
+- **[AutoMemoryToolsAdvisor](docs/tools/AutoMemoryToolsAdvisor.md)** - A `ChatClient` advisor that wires `AutoMemoryTools` and its companion system prompt into the request pipeline automatically. Eliminates manual tool and prompt registration, deduplicates callbacks, and supports an optional `memoryConsolidationTrigger` to prompt the model to summarise and clean up memories on a schedule.
 
 #### Task orchestration & multi-agent
 
-- **[TodoWriteTool](spring-ai-agent-utils/docs/TodoWriteTool.md)** - Structured task management with state tracking
-- **[TaskTools](spring-ai-agent-utils/docs/TaskTools.md)** - Extensible sub-agent system for delegating complex tasks to specialized agents with multi-model routing and pluggable backends
+- **[TodoWriteTool](docs/tools/TodoWriteTool.md)** - Structured task management with state tracking
+- **[TaskTools](docs/tools/TaskTools.md)** - Extensible sub-agent system for delegating complex tasks to specialized agents with multi-model routing and pluggable backends
 
 #### Agent loop control & observability
 

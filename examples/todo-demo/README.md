@@ -73,5 +73,5 @@ Group 3
 ## Related Resources
 
 - [TodoWriteTool.java](../../spring-ai-agent-utils/src/main/java/org/springaicommunity/agent/tools/TodoWriteTool.java)
-- [Task Tools Documentation](../../spring-ai-agent-utils/docs/TaskTools.md)
+- [Task Tools Documentation](../../docs/tools/TaskTools.md)
 - [Blog Post: Spring AI Agentic Patterns - TodoWrite](https://spring.io/blog/2026/01/20/spring-ai-agentic-patterns-3-todowrite)

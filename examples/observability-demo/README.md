@@ -4,8 +4,8 @@ Shows how to observe and interrupt the agent's tool-calling loop. A `ChatClient.
 
 ## What It Shows
 
-- **[ToolCallListener](../../spring-ai-agent-utils/docs/ToolCallListener.md)**: every tool call is printed with its input, duration and result size, and counted per turn. Tool failures are reported back to the model instead of failing the turn.
-- **[InterruptAdvisor](../../spring-ai-agent-utils/docs/InterruptAdvisor.md)**: the turn stops when you type `/stop`, or when it has made `agent.max-tool-calls-per-turn` tool calls. Both conditions are combined in one `interruptSignal`.
+- **[ToolCallListener](../../docs/tools/ToolCallListener.md)**: every tool call is printed with its input, duration and result size, and counted per turn. Tool failures are reported back to the model instead of failing the turn.
+- **[InterruptAdvisor](../../docs/tools/InterruptAdvisor.md)**: the turn stops when you type `/stop`, or when it has made `agent.max-tool-calls-per-turn` tool calls. Both conditions are combined in one `interruptSignal`.
 - **Composition**: the listener's per-turn counter drives the advisor's budget check.
 
 Tools: `ShellTools`, `FileSystemTools`, `GlobTool`, `GrepTool`, `ListDirectoryTool`.

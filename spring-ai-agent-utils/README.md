@@ -1,6 +1,6 @@
 # Spring AI Agent Utils
 
-<img style="display: block; margin: auto;" align="left" src="./docs/spring-ai-agent-utils-logo.png" width="200" />
+<img style="display: block; margin: auto;" align="left" src="../docs/images/spring-ai-agent-utils-logo.png" width="200" />
 
 A Spring AI library that brings Claude Code-inspired tools and skills to your AI agents.
 
@@ -12,26 +12,26 @@ These are the agent tools needed to implement any agentic behavior
 
 #### Core Tools
 
-- **[AgentEnvironment](docs/AgentEnvironment.md)** - Dynamic agent context utility that provides runtime environment information and git repository status to system prompts
-- **[FileSystemTools](docs/FileSystemTools.md)** - Read, write, and edit files with precise control
-- **[ShellTools](docs/ShellTools.md)** - Execute shell commands with timeout control, background process management, and regex output filtering
-- **[GrepTool](docs/GrepTool.md)** - Pure Java grep implementation for code search with regex, glob filtering, and multiple output modes
-- **[GlobTool](docs/GlobTool.md)** - Fast file pattern matching tool for finding files by name patterns with glob syntax
-- **[SmartWebFetchTool](docs/SmartWebFetchTool.md)** - AI-powered web content summarization with caching
-- **[BraveWebSearchTool](docs/BraveWebSearchTool.md)** - Web search with domain filtering
+- **[AgentEnvironment](../docs/tools/AgentEnvironment.md)** - Dynamic agent context utility that provides runtime environment information and git repository status to system prompts
+- **[FileSystemTools](../docs/tools/FileSystemTools.md)** - Read, write, and edit files with precise control
+- **[ShellTools](../docs/tools/ShellTools.md)** - Execute shell commands with timeout control, background process management, and regex output filtering
+- **[GrepTool](../docs/tools/GrepTool.md)** - Pure Java grep implementation for code search with regex, glob filtering, and multiple output modes
+- **[GlobTool](../docs/tools/GlobTool.md)** - Fast file pattern matching tool for finding files by name patterns with glob syntax
+- **[SmartWebFetchTool](../docs/tools/SmartWebFetchTool.md)** - AI-powered web content summarization with caching
+- **[BraveWebSearchTool](../docs/tools/BraveWebSearchTool.md)** - Web search with domain filtering
 
 #### User feedback
 
-- **[AskUserQuestionTool](docs/AskUserQuestionTool.md)** - Ask users clarifying questions with multiple-choice options during agent execution
+- **[AskUserQuestionTool](../docs/tools/AskUserQuestionTool.md)** - Ask users clarifying questions with multiple-choice options during agent execution
 
 #### Agent Skills
 
-- **[SkillsTool](docs/SkillsTool.md)** - Extend AI agent capabilities with reusable, composable knowledge modules defined in Markdown with YAML front-matter
+- **[SkillsTool](../docs/tools/SkillsTool.md)** - Extend AI agent capabilities with reusable, composable knowledge modules defined in Markdown with YAML front-matter
 
 #### Task orchestration & multi-agent
 
-- **[TodoWriteTool](docs/TodoWriteTool.md)** - Structured task management with state tracking
-- **[TaskTools](docs/TaskTools.md)** - Hierarchical autonomous sub-agent system for delegating complex tasks to specialized agents with dedicated context windows
+- **[TodoWriteTool](../docs/tools/TodoWriteTool.md)** - Structured task management with state tracking
+- **[TaskTools](../docs/tools/TaskTools.md)** - Hierarchical autonomous sub-agent system for delegating complex tasks to specialized agents with dedicated context windows
 
 #### Agent loop control & observability
 
@@ -171,7 +171,7 @@ See the [Examples README](../examples/README.md) for detailed setup, configurati
 
 Provide AI agents with runtime environment information and git repository context through dynamic system prompt parameters. Makes agents context-aware by injecting environment metadata and git status into system prompts.
 
-[**View Full Documentation →**](docs/AgentEnvironment.md)
+[**View Full Documentation →**](../docs/tools/AgentEnvironment.md)
 
 **Quick Example:**
 ```java
@@ -227,7 +227,7 @@ agent.model.knowledge.cutoff=2025-09-29
 
 Read, write, and edit files with precise control. Provides three core operations: Read for reading files with pagination, Write for creating/overwriting files, and Edit for precise string replacement with safety checks.
 
-[**View Full Documentation →**](docs/FileSystemTools.md)
+[**View Full Documentation →**](../docs/tools/FileSystemTools.md)
 
 **Quick Example:**
 ```java
@@ -244,7 +244,7 @@ fileTools.edit(filePath, "oldValue", "newValue", null);
 
 Execute shell commands with background process support. Includes Bash for command execution with optional timeout and background mode, BashOutput for monitoring background processes with regex filtering, and KillShell for graceful process termination.
 
-[**View Full Documentation →**](docs/ShellTools.md)
+[**View Full Documentation →**](../docs/tools/ShellTools.md)
 
 **Quick Example:**
 ```java
@@ -265,7 +265,7 @@ String killResult = shellTools.killShell("shell_1234567890");
 
 Pure Java grep implementation for code search with regex, glob filtering, and multiple output modes. No external ripgrep dependency required.
 
-[**View Full Documentation →**](docs/GrepTool.md)
+[**View Full Documentation →**](../docs/tools/GrepTool.md)
 
 **Quick Example:**
 ```java
@@ -280,7 +280,7 @@ String result = grepTool.grep("public class.*", "./src", null,
 
 Fast file pattern matching tool for finding files by name patterns. Uses pure Java implementation with glob syntax support, sorted by modification time.
 
-[**View Full Documentation →**](docs/GlobTool.md)
+[**View Full Documentation →**](../docs/tools/GlobTool.md)
 
 **Quick Example:**
 ```java
@@ -297,7 +297,7 @@ String components = globTool.glob("**/*Component.tsx", "./src");
 
 AI-powered web content fetching and summarization tool with intelligent caching and safety features. Fetches web pages, converts HTML to Markdown, and uses AI to extract relevant information based on a user prompt.
 
-[**View Full Documentation →**](docs/SmartWebFetchTool.md)
+[**View Full Documentation →**](../docs/tools/SmartWebFetchTool.md)
 
 **Quick Example:**
 ```java
@@ -319,7 +319,7 @@ String result = webFetch.webFetch(
 
 Web search capabilities using the Brave Search API. Provides up-to-date information from the web with optional domain filtering.
 
-[**View Full Documentation →**](docs/BraveWebSearchTool.md)
+[**View Full Documentation →**](../docs/tools/BraveWebSearchTool.md)
 
 **Quick Example:**
 ```java
@@ -346,7 +346,7 @@ String results2 = searchTool.webSearch("Spring AI site:spring.io", null, null);
 
 Ask users clarifying questions during AI agent execution. Enables agents to gather user preferences, clarify ambiguous requirements, and get decisions on implementation choices with multiple-choice or free-text input.
 
-[**View Full Documentation →**](docs/AskUserQuestionTool.md)
+[**View Full Documentation →**](../docs/tools/AskUserQuestionTool.md)
 
 **Quick Example:**
 ```java
@@ -380,7 +380,7 @@ See the [ask-user-question-demo](../examples/ask-user-question-demo) for a compl
 
 Extend AI agent capabilities with reusable, composable knowledge modules defined in Markdown with YAML front-matter. Based on [Claude Code's Agent Skills](https://code.claude.com/docs/en/skills#agent-skills), skills enable specialized task handling through semantic matching.
 
-[**View Full Documentation →**](docs/SkillsTool.md)
+[**View Full Documentation →**](../docs/tools/SkillsTool.md)
 
 **Quick Example:**
 ```java
@@ -412,7 +412,7 @@ Instructions for the AI agent to follow...
 
 Structured task list management for AI coding sessions. Helps AI agents track progress, organize complex tasks, and provide visibility into task execution.
 
-[**View Full Documentation →**](docs/TodoWriteTool.md)
+[**View Full Documentation →**](../docs/tools/TodoWriteTool.md)
 
 **Quick Example:**
 ```java
@@ -430,7 +430,7 @@ todoTool.todoWrite(List.of(
 
 Enable your AI agent to delegate complex, multi-step tasks to specialized sub-agents with dedicated context windows. Based on [Claude Code's sub-agents](https://code.claude.com/docs/en/sub-agents), this system provides autonomous task execution with specialized expertise and an extensible architecture supporting multiple sub-agent types.
 
-[**View Full Documentation →**](docs/TaskTools.md)
+[**View Full Documentation →**](../docs/tools/TaskTools.md)
 
 **Quick Example:**
 ```java

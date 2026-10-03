@@ -135,7 +135,7 @@ spring.ai.google.genai.chat.options.model=gemini-3.1-pro-preview
 
 ## Learn More
 
-- [SkillsTool Documentation](../../spring-ai-agent-utils/docs/SkillsTool.md)
+- [SkillsTool Documentation](../../docs/tools/SkillsTool.md)
 - [Examples Overview](../README.md)
 - [Spring AI Documentation](https://docs.spring.io/spring-ai/reference/)
 

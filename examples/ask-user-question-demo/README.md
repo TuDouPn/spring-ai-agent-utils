@@ -1,6 +1,6 @@
 # AskUserQuestionTool Demo
 
-A Spring Boot console application demonstrating the [AskUserQuestionTool](../../spring-ai-agent-utils/docs/AskUserQuestionTool.md) - a tool that enables AI agents to ask users clarifying questions during execution.
+A Spring Boot console application demonstrating the [AskUserQuestionTool](../../docs/tools/AskUserQuestionTool.md) - a tool that enables AI agents to ask users clarifying questions during execution.
 
 ## Overview
 
@@ -147,7 +147,7 @@ Edit the model and provider configuration in [application.properties](src/main/r
 
 ## Learn More
 
-- [AskUserQuestionTool Documentation](../../spring-ai-agent-utils/docs/AskUserQuestionTool.md)
+- [AskUserQuestionTool Documentation](../../docs/tools/AskUserQuestionTool.md)
 - [Spring AI Documentation](https://docs.spring.io/spring-ai/reference/)
 - [Claude Agent SDK - User Input](https://platform.claude.com/docs/en/agent-sdk/user-input#question-format)
 

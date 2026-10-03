@@ -56,7 +56,7 @@ The orchestrator will automatically discover the A2A agent at startup and make i
 
 ### Related Documentation
 
-- [Task Tools Documentation](../../spring-ai-agent-utils/docs/TaskTools.md)
-- [Subagent Framework](../../spring-ai-agent-utils/docs/Subagent.md)
+- [Task Tools Documentation](../../docs/tools/TaskTools.md)
+- [Subagent Framework](../../docs/tools/Subagent.md)
 - [spring-ai-agent-utils-a2a](../../spring-ai-agent-utils-a2a/README.md) - A2A module reference
 - [Sub-Agent Demo](../subagent-demo) - Local-only Claude subagent demo

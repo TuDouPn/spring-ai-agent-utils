@@ -177,7 +177,7 @@ agent.model.knowledge.cutoff=2025-08-07
 
 ## Related Documentation
 
-- [AutoMemoryTools Documentation](../../spring-ai-agent-utils/docs/AutoMemoryTools.md) — full API reference, security model, and system prompt guide
+- [AutoMemoryTools Documentation](../../../docs/tools/AutoMemoryTools.md) — full API reference, security model, and system prompt guide
 - [Claude Code — Memory](https://code.claude.com/docs/en/memory) — the file-based memory pattern this demo implements
 - [Claude API SDK — Memory Tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool) — the tool specification the operations are modelled after
-- [TodoWriteTool Documentation](../../spring-ai-agent-utils/docs/TodoWriteTool.md) — the other tool included in this demo
+- [TodoWriteTool Documentation](../../../docs/tools/TodoWriteTool.md) — the other tool included in this demo

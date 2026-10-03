@@ -13,20 +13,20 @@ Command-line AI assistant with:
 - **User Interaction**: Ask questions and collect answers during execution
 - **Skills System**: Load custom capabilities from Markdown files
 - **MCP Integration**: Connect to Model Context Protocol servers (AirBnB demo included)
-- **Tool Call Tracing**: Every tool call is printed with its duration via a [ToolCallListener](../../spring-ai-agent-utils/docs/ToolCallListener.md)
-- **Turn Timeout**: An [InterruptAdvisor](../../spring-ai-agent-utils/docs/InterruptAdvisor.md) stops a turn that runs past `agent.turn.timeout`
+- **Tool Call Tracing**: Every tool call is printed with its duration via a [ToolCallListener](../../docs/tools/ToolCallListener.md)
+- **Turn Timeout**: An [InterruptAdvisor](../../docs/tools/InterruptAdvisor.md) stops a turn that runs past `agent.turn.timeout`
 - **Multi-Model Support**: Anthropic Claude, OpenAI GPT, or Google Gemini
 
 ## Tools
 
-- **[AskUserQuestionTool](../../spring-ai-agent-utils/docs/AskUserQuestionTool.md)** - Interactive Q&A during execution
-- **[SkillsTool](../../spring-ai-agent-utils/docs/SkillsTool.md)** - Load custom skills from Markdown files
-- **[ShellTools](../../spring-ai-agent-utils/docs/ShellTools.md)** - Execute shell commands
-- **[FileSystemTools](../../spring-ai-agent-utils/docs/FileSystemTools.md)** - File read/write/edit operations
-- **[GrepTool](../../spring-ai-agent-utils/docs/GrepTool.md)** - Regex-based code search
-- **[SmartWebFetchTool](../../spring-ai-agent-utils/docs/SmartWebFetchTool.md)** - AI-powered web content extraction
-- **[BraveWebSearchTool](../../spring-ai-agent-utils/docs/BraveWebSearchTool.md)** - Web search
-- **[TodoWriteTool](../../spring-ai-agent-utils/docs/TodoWriteTool.md)** - Task tracking
+- **[AskUserQuestionTool](../../docs/tools/AskUserQuestionTool.md)** - Interactive Q&A during execution
+- **[SkillsTool](../../docs/tools/SkillsTool.md)** - Load custom skills from Markdown files
+- **[ShellTools](../../docs/tools/ShellTools.md)** - Execute shell commands
+- **[FileSystemTools](../../docs/tools/FileSystemTools.md)** - File read/write/edit operations
+- **[GrepTool](../../docs/tools/GrepTool.md)** - Regex-based code search
+- **[SmartWebFetchTool](../../docs/tools/SmartWebFetchTool.md)** - AI-powered web content extraction
+- **[BraveWebSearchTool](../../docs/tools/BraveWebSearchTool.md)** - Web search
+- **[TodoWriteTool](../../docs/tools/TodoWriteTool.md)** - Task tracking
 - **MCP Tools** - External tool integration via Model Context Protocol
 
 ## Prerequisites
@@ -102,7 +102,7 @@ allowed-tools: Read, Bash
 Skill prompt instructions here...
 ```
 
-See [SkillsTool docs](../../spring-ai-agent-utils/docs/SkillsTool.md) for details.
+See [SkillsTool docs](../../docs/tools/SkillsTool.md) for details.
 
 ## Architecture
 
@@ -208,7 +208,7 @@ Uncomment `MyLoggingAdvisor` in [Application.java](src/main/java/org/springaicom
 ## Resources
 
 - [spring-ai-agent-utils Documentation](../../spring-ai-agent-utils/README.md)
-- [Tool Documentation](../../spring-ai-agent-utils/docs/)
+- [Tool Documentation](../../docs/tools)
 - [Spring AI Docs](https://docs.spring.io/spring-ai/reference/)
 
 ## License

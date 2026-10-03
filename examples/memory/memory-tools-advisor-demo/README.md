@@ -1,6 +1,6 @@
 # memory-tools-advisor-demo
 
-A runnable Spring Boot console agent demonstrating [`AutoMemoryToolsAdvisor`](../../../spring-ai-agent-utils/docs/AutoMemoryToolsAdvisor.md) in a realistic multi-advisor setup.
+A runnable Spring Boot console agent demonstrating [`AutoMemoryToolsAdvisor`](../../../docs/tools/AutoMemoryToolsAdvisor.md) in a realistic multi-advisor setup.
 
 ## What it demonstrates
 

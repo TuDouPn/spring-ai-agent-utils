@@ -86,6 +86,6 @@ You are a Spring AI Expert...
 
 ## Related Documentation
 
-- [Task Tools Documentation](../../spring-ai-agent-utils/docs/TaskTools.md)
-- [Subagent Framework](../../spring-ai-agent-utils/docs/Subagent.md)
+- [Task Tools Documentation](../../docs/tools/TaskTools.md)
+- [Subagent Framework](../../docs/tools/Subagent.md)
 - [Sub-Agent A2A Demo](../subagent-a2a-demo) - Combining local and remote A2A sub-agents

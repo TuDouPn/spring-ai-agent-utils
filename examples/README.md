@@ -74,7 +74,7 @@ mvn clean install
 ## Documentation
 
 - [spring-ai-agent-utils Library](../spring-ai-agent-utils/README.md)
-- [Tool Documentation](../spring-ai-agent-utils/docs/)
+- [Tool Documentation](../docs/tools)
 - [Spring AI Reference](https://docs.spring.io/spring-ai/reference/)
 
 ## License
