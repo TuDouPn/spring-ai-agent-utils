@@ -13,6 +13,8 @@ Command-line AI assistant with:
 - **User Interaction**: Ask questions and collect answers during execution
 - **Skills System**: Load custom capabilities from Markdown files
 - **MCP Integration**: Connect to Model Context Protocol servers (AirBnB demo included)
+- **Tool Call Tracing**: Every tool call is printed with its duration via a [ToolCallListener](../../spring-ai-agent-utils/docs/ToolCallListener.md)
+- **Turn Timeout**: An [InterruptAdvisor](../../spring-ai-agent-utils/docs/InterruptAdvisor.md) stops a turn that runs past `agent.turn.timeout`
 - **Multi-Model Support**: Anthropic Claude, OpenAI GPT, or Google Gemini
 
 ## Tools
@@ -70,6 +72,9 @@ spring.ai.anthropic.chat.options.model=claude-sonnet-4-5-20250929
 # Skills location (classpath resource)
 agent.skills.paths=classpath:/.claude/skills
 
+# Stop a turn (the tool-calling loop) that runs longer than this
+agent.turn.timeout=10m
+
 # MCP servers
 spring.ai.mcp.client.stdio.servers-configuration=classpath:/mcp-servers-config.json
 
@@ -103,26 +108,35 @@ See [SkillsTool docs](../../spring-ai-agent-utils/docs/SkillsTool.md) for detail
 
 ### ChatClient Setup
 
-[Application.java:51-94](src/main/java/org/springaicommunity/agent/Application.java#L51-L94) configures the ChatClient:
+[Application.java](src/main/java/org/springaicommunity/agent/Application.java) configures the ChatClient:
 
 ```java
+// MCP tools, skills and agent tools, collected as ToolCallbacks
+List<ToolCallback> tools = ...;
+
+// Trace every tool call on the console
+List<ToolCallback> observedTools = ToolCallListeners.wrapAll(tools, new ConsoleToolCallListener());
+
 ChatClient chatClient = chatClientBuilder
     .defaultSystem(systemPrompt)                        // MAIN_AGENT_SYSTEM_PROMPT_V2.md
-    .defaultToolCallbacks(mcpToolCallbackProvider)      // MCP tools
-    .defaultToolCallbacks(skillsTool)                   // Skills
-    .defaultTools(AskUserQuestionTool, TodoWriteTool,   // Agent tools
-                  ShellTools, FileSystemTools,
-                  SmartWebFetchTool, BraveWebSearchTool, GrepTool)
-    .defaultAdvisors(ToolCallAdvisor,                   // Tool execution
-                     MessageChatMemoryAdvisor)          // 500-message memory
+    .defaultTools(observedTools)
+    .defaultAdvisors(
+        InterruptAdvisor.builder()                      // stop turns past the deadline
+            .interruptSignal(() -> System.currentTimeMillis() > turnDeadline.get())
+            .build(),
+        MessageChatMemoryAdvisor)                       // 500-message memory
     .build();
 ```
+
+A stopped turn ends with a `TurnInterruptedException`, which the console loop catches.
 
 ### Key Features
 
 - **System Prompt**: [MAIN_AGENT_SYSTEM_PROMPT_V2.md](../../spring-ai-agent-utils/src/main/resources/prompt/MAIN_AGENT_SYSTEM_PROMPT_V2.md) - comprehensive agent behavior config
 - **MCP Integration**: Auto-connects to configured MCP servers (AirBnB example included)
 - **User Interaction**: `AskUserQuestionTool` enables multi-choice questions during execution
+- **Tool Call Tracing**: [ConsoleToolCallListener](src/main/java/org/springaicommunity/agent/ConsoleToolCallListener.java) prints each call (`> Bash {...}`, `< Bash ok (120 ms)`) and reports tool failures back to the model instead of failing the turn
+- **Turn Timeout**: `InterruptAdvisor` polls the deadline before every model request in the tool-calling loop. For interactive cancellation (a `/stop` command), see the [observability-demo](../observability-demo)
 - **Logging**: Optional `MyLoggingAdvisor` for debugging (currently commented out)
 
 ## Usage Examples
@@ -157,6 +171,7 @@ ChatClient chatClient = chatClientBuilder
 code-agent-demo/
 ├── src/main/java/.../agent/
 │   ├── Application.java           # ChatClient setup and main loop
+│   ├── ConsoleToolCallListener.java # Prints each tool call (ToolCallListener)
 │   └── MyLoggingAdvisor.java      # Optional debug advisor
 ├── src/main/resources/
 │   ├── .claude/skills/            # Custom skills directory
@@ -188,7 +203,7 @@ SmartWebFetchTool.builder(client).maxContentLength(150_000).build()
 ```
 
 **Enable debug logging**:
-Uncomment `MyLoggingAdvisor` in [Application.java:90-93](src/main/java/org/springaicommunity/agent/Application.java#L90-L93)
+Uncomment `MyLoggingAdvisor` in [Application.java](src/main/java/org/springaicommunity/agent/Application.java)
 
 ## Resources
 
