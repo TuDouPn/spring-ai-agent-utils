@@ -80,7 +80,8 @@ class A2ASubagentResolverTest {
 			"/a/b,       /.well-known/agent-card.json, /a/b/.well-known/agent-card.json",
 			"/agent,     /custom/agent-card.json,      /agent/custom/agent-card.json",
 			"/agent,     custom/agent.json,            /agent/custom/agent.json",
-			"'',         custom/agent.json,            /custom/agent.json" })
+			"'',         custom/agent.json,            /custom/agent.json",
+			"/my%20agent, /.well-known/agent-card.json, /my agent/.well-known/agent-card.json" })
 	@DisplayName("Should request the agent card relative to the agent base URL")
 	void shouldRequestAgentCardRelativeToAgentBaseUrl(String agentPath, String agentCardPath, String expectedPath) {
 		A2ASubagentResolver resolver = new A2ASubagentResolver(agentCardPath);

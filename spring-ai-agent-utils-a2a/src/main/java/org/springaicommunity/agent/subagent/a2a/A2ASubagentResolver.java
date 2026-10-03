@@ -82,7 +82,8 @@ public class A2ASubagentResolver implements SubagentResolver {
 	 * @return the absolute card path to request
 	 */
 	static String agentCardPath(String agentUrl, String agentCardPath) throws URISyntaxException {
-		String basePath = new URI(agentUrl).getPath();
+		// Raw (still percent-encoded) path: the SDK parses the result as a URI again
+		String basePath = new URI(agentUrl).getRawPath();
 		basePath = (basePath == null) ? "" : basePath.replaceAll("/+$", "");
 		return agentCardPath.startsWith("/") ? basePath + agentCardPath : basePath + "/" + agentCardPath;
 	}
