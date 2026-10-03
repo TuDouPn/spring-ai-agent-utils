@@ -73,6 +73,54 @@ class SkillsTest {
 		}
 	}
 
+	@Test
+	@DisplayName("loadResource aggregates skills when a filesystem directory precedes a JAR on the classpath")
+	void loadResourceAggregatesSkillsWhenDirectoryPrecedesJar(@TempDir Path tempDir) throws IOException {
+		// The application's own classes directory comes before dependency JARs on a
+		// typical classpath, so ClassPathResource#getFile() resolves to the directory.
+		Path classesDir = tempDir.resolve("classes");
+		Path localSkill = classesDir.resolve("META-INF/skills/local-skill/SKILL.md");
+		Files.createDirectories(localSkill.getParent());
+		Files.writeString(localSkill, """
+				---
+				name: local-skill
+				description: Test skill local-skill
+				---
+
+				local-skill content.
+				""");
+		Path jar = createSkillJar(tempDir.resolve("skills-a.jar"), "skill-a");
+
+		try (URLClassLoader classLoader = new URLClassLoader(
+				new URL[] { classesDir.toUri().toURL(), jar.toUri().toURL() }, null)) {
+
+			List<Skill> skills = Skills.loadResource(new ClassPathResource("META-INF/skills", classLoader));
+
+			assertThat(skills.stream().map(skill -> skill.frontMatter().get("name")))
+				.containsExactlyInAnyOrder("local-skill", "skill-a");
+			// Filesystem skills keep a plain directory base path, not a file: URL
+			assertThat(skills).filteredOn(skill -> "local-skill".equals(skill.frontMatter().get("name")))
+				.singleElement()
+				.extracting(Skill::basePath)
+				.isEqualTo(localSkill.getParent().toAbsolutePath().toString());
+		}
+	}
+
+	@Test
+	@DisplayName("loadResource scans the ClassPathResource's own class loader")
+	void loadResourceUsesResourceClassLoader(@TempDir Path tempDir) throws IOException {
+		Path jar = createSkillJar(tempDir.resolve("skills-a.jar"), "skill-a");
+
+		// The thread context class loader is left untouched: the skills are only
+		// visible through the class loader the resource was created with.
+		try (URLClassLoader classLoader = new URLClassLoader(new URL[] { jar.toUri().toURL() }, null)) {
+
+			List<Skill> skills = Skills.loadResource(new ClassPathResource("META-INF/skills", classLoader));
+
+			assertThat(skills.stream().map(skill -> skill.frontMatter().get("name"))).containsExactly("skill-a");
+		}
+	}
+
 	private static Path createSkillJar(Path jarPath, String skillName) throws IOException {
 		// A real MANIFEST.MF is required: both the classpath*: resolution strategy and
 		// the manual JAR scan fallback in Skills discover JAR roots by enumerating
