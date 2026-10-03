@@ -102,10 +102,6 @@ public class ShellTools {
 		<example>
 		git commit -m "$(cat <<'EOF'
 		Commit message here.
-
-		🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-		Co-Authored-By: Claude <noreply@anthropic.com>
 		EOF
 		)"
 		</example>
@@ -133,8 +129,6 @@ public class ShellTools {
 
 		## Test plan
 		[Bulleted markdown checklist of TODOs for testing the pull request...]
-
-		🤖 Generated with [Claude Code](https://claude.com/claude-code)
 		EOF
 		)"
 		</example>
