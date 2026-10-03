@@ -85,7 +85,7 @@ public class GlobTool {
 		""")
 	public String glob(
 		@ToolParam(description = "The glob pattern to match files against") String pattern,
-		@ToolParam(description = "The directory to search in. If not specified, the current working directory will be used. IMPORTANT: Omit this field to use the default directory. DO NOT enter \\\"undefined\\\" or \\\"null\\\" - simply omit it for the default behavior. Must be a valid directory path if provided.", required = false) String path) { // @formatter:on
+		@ToolParam(description = "The directory to search in, absolute or relative to the working directory. If not specified, the working directory will be used. IMPORTANT: Omit this field to use the default directory. DO NOT enter \\\"undefined\\\" or \\\"null\\\" - simply omit it for the default behavior. Must be a valid directory path if provided.", required = false) String path) { // @formatter:on
 
 		Assert.hasText(pattern, "	The glob pattern must not be empty");
 
@@ -94,7 +94,9 @@ public class GlobTool {
 			// specified
 			Path searchPath;
 			if (StringUtils.hasText(path)) {
-				searchPath = Paths.get(path);
+				// A relative path is relative to the working directory (e.g. the workspace
+				// root), not the JVM's; '..' is kept for the confinement check below.
+				searchPath = AllowedDirectories.resolve(this.workingDirectory, path);
 			}
 			else if (this.workingDirectory != null) {
 				searchPath = this.workingDirectory;

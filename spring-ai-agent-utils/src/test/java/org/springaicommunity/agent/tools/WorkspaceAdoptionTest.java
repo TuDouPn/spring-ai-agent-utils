@@ -100,6 +100,67 @@ class WorkspaceAdoptionTest {
 		assertThat(listDirectory.listDirectory(this.outside.toString(), null, null)).startsWith(DENIED);
 	}
 
+	// Relative paths resolve against the workspace, not the JVM working directory
+	// (https://github.com/spring-ai-community/spring-ai-agent-utils/issues/94). The test
+	// JVM runs outside the workspace, so resolving against it would be denied.
+
+	@Test
+	void grepToolResolvesRelativePathAgainstWorkspace() throws Exception {
+		createPlaybook();
+		GrepTool grep = GrepTool.builder().workspace(this.workspace).build();
+
+		assertThat(grep.grep("needle", "playbook", null, null, null, null, null, null, null, null, null, null, null))
+			.contains("steps.md");
+		assertThat(grep.grep("needle", escapePath(), null, null, null, null, null, null, null, null, null, null,
+				null))
+			.startsWith(DENIED);
+	}
+
+	@Test
+	void globToolResolvesRelativePathAgainstWorkspace() throws Exception {
+		createPlaybook();
+		GlobTool glob = GlobTool.builder().workspace(this.workspace).build();
+
+		assertThat(glob.glob("*.md", "playbook")).contains("steps.md");
+		assertThat(glob.glob("*.env", escapePath())).startsWith(DENIED);
+	}
+
+	@Test
+	void listDirectoryToolResolvesRelativePathAgainstWorkspace() throws Exception {
+		createPlaybook();
+		ListDirectoryTool listDirectory = ListDirectoryTool.builder().workspace(this.workspace).build();
+
+		assertThat(listDirectory.listDirectory("playbook", null, null)).contains("steps.md");
+		assertThat(listDirectory.listDirectory(escapePath(), null, null)).startsWith(DENIED);
+	}
+
+	@Test
+	void relativePathResolvesAgainstOverriddenWorkingDirectory() throws Exception {
+		createPlaybook();
+		Files.createDirectories(this.workspaceDir.resolve("playbook/nested"));
+		Files.writeString(this.workspaceDir.resolve("playbook/nested/deep.md"), "needle nested\n");
+		ListDirectoryTool listDirectory = ListDirectoryTool.builder()
+			.workspace(this.workspace)
+			.workingDirectory(this.workspaceDir.resolve("playbook"))
+			.build();
+
+		// Resolved against the overridden working directory; confinement stays the
+		// workspace root
+		assertThat(listDirectory.listDirectory("nested", null, null)).contains("deep.md");
+		assertThat(listDirectory.listDirectory("../../" + this.outside.getFileName(), null, null))
+			.startsWith(DENIED);
+	}
+
+	private void createPlaybook() throws Exception {
+		Files.createDirectories(this.workspaceDir.resolve("playbook"));
+		Files.writeString(this.workspaceDir.resolve("playbook/steps.md"), "needle in playbook\n");
+	}
+
+	/** A relative path from the workspace root to the (sibling) outside directory. */
+	private String escapePath() {
+		return "../" + this.outside.getFileName();
+	}
+
 	@Test
 	void shellToolsWorkspaceRunsCommandsAtWorkspaceRoot() throws Exception {
 		ShellTools shell = ShellTools.builder().workspace(this.workspace).build();

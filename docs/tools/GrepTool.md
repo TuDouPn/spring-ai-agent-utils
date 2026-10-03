@@ -1113,9 +1113,11 @@ String deserializationRisks = grepTool.grep(
 
 ## Directory confinement (`allowedDirectory` / `allowedDirectories`)
 
-By itself, `workingDirectory(...)` is only the **default** used when the model omits the
-`path` argument — an explicit `path` is taken as-is. To confine searches to a workspace,
-also configure allowed directories (same semantics and shared implementation with
+`workingDirectory(...)` is the **default** used when the model omits the `path` argument,
+and the base a **relative** `path` is resolved against (an absolute `path` is taken as-is;
+without a working directory, relative paths resolve against the JVM working directory).
+By itself it does not confine searches. To confine searches to a workspace, also configure
+allowed directories (same semantics and shared implementation with
 `FileSystemTools`; empty = unrestricted):
 
 ```java

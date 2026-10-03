@@ -63,7 +63,7 @@ public class ListDirectoryTool {
 		- Prefer this over `bash ls` for simple directory listing — cleaner output, no timestamps or permission bits
 		""")
 	public String listDirectory(
-		@ToolParam(description = "Absolute path to the directory to list. If omitted, lists the working directory.", required = false) String path,
+		@ToolParam(description = "Path to the directory to list, absolute or relative to the working directory. If omitted, lists the working directory.", required = false) String path,
 		@ToolParam(description = "How many levels deep to recurse (1 = immediate children only, 2 = one level of subdirs, etc.). Default: 1.", required = false) Integer depth,
 		@ToolParam(description = "Maximum number of entries to return. Default: 50.", required = false) Integer limit) { // @formatter:on
 
@@ -72,7 +72,9 @@ public class ListDirectoryTool {
 
 		Path targetDir;
 		if (path != null && !path.isBlank()) {
-			targetDir = Paths.get(path);
+			// A relative path is relative to the working directory (e.g. the workspace
+			// root), not the JVM's; '..' is kept for the confinement check below.
+			targetDir = AllowedDirectories.resolve(this.workingDirectory, path);
 		}
 		else if (this.workingDirectory != null) {
 			targetDir = this.workingDirectory;

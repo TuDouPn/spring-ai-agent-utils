@@ -140,7 +140,7 @@ public class GrepTool {
 		""")
 	public String grep(
 		@ToolParam(description = "The regular expression pattern to search for in file contents") String pattern,
-		@ToolParam(description = "File or directory to search in. Defaults to current working directory.", required = false) String path,
+		@ToolParam(description = "File or directory to search in, absolute or relative to the working directory. Defaults to the working directory.", required = false) String path,
 		@ToolParam(description = "Glob pattern to filter files (e.g. \"*.js\", \"**/*.tsx\")", required = false) String glob,
 		@ToolParam(description = "Output mode: \"content\" shows matching lines (supports -A/-B/-C context, -n line numbers, head_limit), \"files_with_matches\" shows file paths (supports head_limit), \"count\" shows match counts (supports head_limit). Defaults to \"files_with_matches\".", required = false) OutputMode outputMode,
 		@ToolParam(description = "Number of lines to show before each match. Requires output_mode: \"content\", ignored otherwise.", required = false) Integer contextBefore,
@@ -158,7 +158,9 @@ public class GrepTool {
 			// specified
 			Path searchPath;
 			if (StringUtils.hasText(path)) {
-				searchPath = Paths.get(path);
+				// A relative path is relative to the working directory (e.g. the workspace
+				// root), not the JVM's; '..' is kept for the confinement check below.
+				searchPath = AllowedDirectories.resolve(this.workingDirectory, path);
 			}
 			else if (this.workingDirectory != null) {
 				searchPath = this.workingDirectory;

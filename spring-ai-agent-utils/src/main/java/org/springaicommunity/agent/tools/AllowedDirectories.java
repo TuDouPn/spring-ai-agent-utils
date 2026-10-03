@@ -48,6 +48,21 @@ final class AllowedDirectories {
 	}
 
 	/**
+	 * Resolves a model-supplied path: a relative path is resolved against the working
+	 * directory when one is configured (e.g. the workspace root), instead of the JVM's
+	 * working directory. Absolute paths, and relative paths without a configured working
+	 * directory, are returned as given. The result is not normalized, so {@code ..}
+	 * components still reach {@link #validate(String)}.
+	 * @param workingDirectory the configured working directory, or {@code null}
+	 * @param path the path supplied by the model
+	 * @return the path to validate and use
+	 */
+	static Path resolve(Path workingDirectory, String path) {
+		Path requested = Paths.get(path);
+		return (workingDirectory != null && !requested.isAbsolute()) ? workingDirectory.resolve(requested) : requested;
+	}
+
+	/**
 	 * Validates that the given file path is within at least one configured allowed
 	 * directory. When no allowed directories are configured, all paths are allowed. Uses
 	 * three checks per directory candidate: (1) rejects raw {@code ..} path components to
