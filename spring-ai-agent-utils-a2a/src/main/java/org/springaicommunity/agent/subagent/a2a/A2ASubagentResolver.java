@@ -16,6 +16,7 @@
 package org.springaicommunity.agent.subagent.a2a;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import io.a2a.A2A;
 import io.a2a.spec.AgentCard;
@@ -62,14 +63,28 @@ public class A2ASubagentResolver implements SubagentResolver {
 		}
 		try {
 			String url = subagentRef.uri();
-			String path = new URI(url).getPath();
-			AgentCard card = A2A.getAgentCard(url, path + agentCardPath, null);
+			AgentCard card = A2A.getAgentCard(url, agentCardPath(url, this.agentCardPath), null);
 			logger.debug("Discovered agent: {} at {}", card.name(), url);
 			return new A2ASubagentDefinition(subagentRef, card);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Builds the card path to request for an agent. The A2A SDK resolves the card path
+	 * against the agent URL, where an absolute path replaces the agent's own path, so the
+	 * agent's path is prefixed explicitly (e.g. {@code http://host/agent} with the default
+	 * card path becomes {@code /agent/.well-known/agent-card.json}).
+	 * @param agentUrl the agent base URL
+	 * @param agentCardPath the card path, relative to the agent base URL
+	 * @return the absolute card path to request
+	 */
+	static String agentCardPath(String agentUrl, String agentCardPath) throws URISyntaxException {
+		String basePath = new URI(agentUrl).getPath();
+		basePath = (basePath == null) ? "" : basePath.replaceAll("/+$", "");
+		return agentCardPath.startsWith("/") ? basePath + agentCardPath : basePath + "/" + agentCardPath;
 	}
 
 }
