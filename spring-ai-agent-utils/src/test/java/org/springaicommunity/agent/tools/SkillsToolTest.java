@@ -338,6 +338,20 @@ class SkillsToolTest {
 		}
 
 		@Test
+		@DisplayName("should keep the first skill when a name is registered twice")
+		void shouldKeepFirstSkillForDuplicateName() {
+			ToolCallback callback = SkillsTool.builder()
+				.addSkill("my-skill", "First registration", "First content.")
+				.addSkill("my-skill", "Second registration", "Second content.")
+				.build();
+
+			String description = callback.getToolDefinition().description();
+			assertThat(description).contains("First registration").doesNotContain("Second registration");
+			assertThat(description.split("<name>my-skill</name>", -1)).hasSize(2);
+			assertThat(callback.call("{\"command\":\"my-skill\"}")).isEqualTo("\"First content.\"");
+		}
+
+		@Test
 		@DisplayName("should combine programmatic and resource skills in one tool")
 		void shouldCombineProgrammaticAndResourceSkills() {
 			ToolCallback callback = SkillsTool.builder()

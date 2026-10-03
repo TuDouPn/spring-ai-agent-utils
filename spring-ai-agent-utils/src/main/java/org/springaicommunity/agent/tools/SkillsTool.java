@@ -17,11 +17,14 @@ package org.springaicommunity.agent.tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springaicommunity.agent.common.workspace.Workspace;
 import org.springaicommunity.agent.utils.Skills;
 
@@ -35,6 +38,8 @@ import org.springframework.util.Assert;
  * @author Christian Tzolov
  */
 public class SkillsTool {
+
+	private static final Logger logger = LoggerFactory.getLogger(SkillsTool.class);
 
 	private static final String TOOL_DESCRIPTION_TEMPLATE = """
 			Execute a skill within the main conversation
@@ -175,9 +180,11 @@ public class SkillsTool {
 		public ToolCallback build() {
 			Assert.notEmpty(this.skills, "At least one skill must be configured");
 
-			String skillsXml = this.skills.stream().map(s -> s.toXml()).collect(Collectors.joining("\n"));
+			List<Skill> uniqueSkills = uniqueByName(this.skills);
 
-			return FunctionToolCallback.builder("Skill", new SkillsFunction(toSkillsMap(this.skills), this.workspace))
+			String skillsXml = uniqueSkills.stream().map(s -> s.toXml()).collect(Collectors.joining("\n"));
+
+			return FunctionToolCallback.builder("Skill", new SkillsFunction(toSkillsMap(uniqueSkills), this.workspace))
 				.description(this.toolDescriptionTemplate.formatted(skillsXml))
 				.inputType(SkillsInput.class)
 				.build();
@@ -204,6 +211,24 @@ public class SkillsTool {
 			return "<skill>\n%s\n</skill>".formatted(frontMatterXml);
 		}
 
+	}
+
+	/**
+	 * Keeps the first skill registered under each name, in registration order, and logs
+	 * a warning for each later duplicate. Duplicates are easy to get when a classpath
+	 * location is aggregated across several JARs and directories; listing both would
+	 * advertise a skill to the model that can never be invoked.
+	 */
+	private static List<Skill> uniqueByName(List<Skill> skills) {
+		Map<String, Skill> unique = new LinkedHashMap<>();
+		for (Skill skill : skills) {
+			Skill existing = unique.putIfAbsent(skill.name(), skill);
+			if (existing != null) {
+				logger.warn("Ignoring duplicate skill '{}' from '{}': already registered from '{}'", skill.name(),
+						skill.basePath(), existing.basePath());
+			}
+		}
+		return new ArrayList<>(unique.values());
 	}
 
 	private static Map<String, Skill> toSkillsMap(List<Skill> skills) {
