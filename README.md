@@ -44,6 +44,7 @@ These are the agent tools needed to implement any agentic behavior
 #### Core Tools
 
 - **[AgentEnvironment](docs/tools/AgentEnvironment.md)** - Dynamic agent context utility that provides runtime environment information and git repository status to system prompts
+- **[AgentToolset](docs/tools/AgentToolset.md)** - Factory for the default shell, file, and search callbacks over an `ExecBackend` and `Workspace`
 - **[FileSystemTools](docs/tools/FileSystemTools.md)** - Read, write, and edit files with precise control
 - **[ShellTools](docs/tools/ShellTools.md)** - Execute shell commands with timeout control, background process management, and regex output filtering
 - **[GrepTool](docs/tools/GrepTool.md)** - Pure Java grep implementation for code search with regex, glob filtering, and multiple output modes
