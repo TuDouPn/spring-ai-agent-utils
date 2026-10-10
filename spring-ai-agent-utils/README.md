@@ -108,7 +108,12 @@ public class Application {
                     .param(AgentEnvironment.ENVIRONMENT_INFO_KEY, AgentEnvironment.info())
                     .param(AgentEnvironment.GIT_STATUS_KEY, AgentEnvironment.gitStatus())
                     .param(AgentEnvironment.AGENT_MODEL_KEY, "claude-sonnet-4-5-20250929")
-                    .param(AgentEnvironment.AGENT_MODEL_KNOWLEDGE_CUTOFF_KEY, "2025-01-01"))
+                    .param(AgentEnvironment.AGENT_MODEL_KNOWLEDGE_CUTOFF_KEY, "2025-01-01")
+                    .params(AgentToolset.promptVariables(taskTool,
+                        ShellTools.builder().build(),
+                        FileSystemTools.builder().build(),
+                        SmartWebFetchTool.builder(chatClientBuilder.clone().build()).build(),
+                        TodoWriteTool.builder().build())))
 
                 // Sub-Agents
                 .defaultToolCallbacks(taskTool)
@@ -176,6 +181,7 @@ Provide AI agents with runtime environment information and git repository contex
 
 **Quick Example:**
 ```java
+import org.springaicommunity.agent.tools.AgentToolset;
 import org.springaicommunity.agent.utils.AgentEnvironment;
 
 @Value("${agent.model:Unknown}")
@@ -187,14 +193,17 @@ String agentModelKnowledgeCutoff;
 @Value("classpath:/prompt/MAIN_AGENT_SYSTEM_PROMPT_V2.md")
 Resource systemPrompt;
 
+List<ToolCallback> tools = AgentToolset.builder().build();
+
 // Configure ChatClient with dynamic environment context
 ChatClient chatClient = chatClientBuilder
     .defaultSystem(p -> p.text(systemPrompt)
         .param(AgentEnvironment.ENVIRONMENT_INFO_KEY, AgentEnvironment.info())
         .param(AgentEnvironment.GIT_STATUS_KEY, AgentEnvironment.gitStatus())
         .param(AgentEnvironment.AGENT_MODEL_KEY, agentModel)
-        .param(AgentEnvironment.AGENT_MODEL_KNOWLEDGE_CUTOFF_KEY, agentModelKnowledgeCutoff))
-    .defaultTools(/* your tools */)
+        .param(AgentEnvironment.AGENT_MODEL_KNOWLEDGE_CUTOFF_KEY, agentModelKnowledgeCutoff)
+        .params(AgentToolset.promptVariables(tools)))
+    .defaultTools(tools)
     .build();
 ```
 

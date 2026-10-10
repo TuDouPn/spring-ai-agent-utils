@@ -56,6 +56,43 @@ List<ToolCallback> tools = AgentToolset.builder()
 
 `execBackend` is consulted only at `EXECUTE`. Passing one at `READ` or `WRITE` is ignored so the same backend/workspace pair can be reused for a lower tier.
 
+## System prompt
+
+`MAIN_AGENT_SYSTEM_PROMPT_V2.md` is a [StringTemplate](https://www.stringtemplate.org/) rendered by Spring AI (`{if(FLAG)}` … `{endif}`). Sections that name Bash, Write, Edit, TodoWrite, WebFetch, or Task are included only when that tool was actually assembled. A read-only plan agent otherwise sees "use Bash" / "use Write" instructions and may call tools it was not given.
+
+`AgentToolset.promptVariables(...)` builds the flag map from the callbacks (or from the same `@Tool` objects, `ToolCallback`s, and `ToolCallbackProvider`s accepted by `with(...)`). Every flag is always present, `true` or `false`. The default renderer throws if one is omitted.
+
+| Flag | True when |
+|------|-----------|
+| `WORKSPACE_WRITE_AVAILABLE` | `Write` or `Edit` is present (`WRITE`, `EXECUTE`) |
+| `WORKSPACE_EXECUTE_AVAILABLE` | `Bash` is present (`EXECUTE`) |
+| `WORKSPACE_FULL_TOOLS_AVAILABLE` | `Read`, `Write`, `Edit`, and `Bash` are all present |
+| `TODO_WRITE_AVAILABLE` | `TodoWrite` was added |
+| `WEB_FETCH_AVAILABLE` | `WebFetch` was added |
+| `TASK_AVAILABLE` | `Task` was added |
+| `TASK_FILE_SEARCH_AVAILABLE` | `Task` registers an `Explore` subagent (`-Explore:` in the tool description) |
+
+`without("Edit")` turns `WORKSPACE_FULL_TOOLS_AVAILABLE` off even on `EXECUTE`, because that section tells the model to call Edit. `without("Bash")` turns the execute and full-tool flags off.
+
+```java
+List<ToolCallback> tools = AgentToolset.builder()
+    .workspace(workspace)
+    .workspaceAccess(AgentToolset.WorkspaceAccess.READ)
+    .build();
+
+ChatClient chatClient = chatClientBuilder
+    .defaultSystem(p -> p.text(systemPrompt)
+        .param(AgentEnvironment.ENVIRONMENT_INFO_KEY, AgentEnvironment.info())
+        .param(AgentEnvironment.GIT_STATUS_KEY, AgentEnvironment.gitStatus())
+        .param(AgentEnvironment.AGENT_MODEL_KEY, agentModel)
+        .param(AgentEnvironment.AGENT_MODEL_KNOWLEDGE_CUTOFF_KEY, agentModelKnowledgeCutoff)
+        .params(AgentToolset.promptVariables(tools)))
+    .defaultTools(tools)
+    .build();
+```
+
+`builder.promptVariables()` is the same map `promptVariables(builder.build())` would return, including `with` / `without`.
+
 ## See also
 
 - [Workspace & Exec SPI](WorkspaceAndExecSPI.md) — the two objects the factory binds

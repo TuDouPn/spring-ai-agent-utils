@@ -17,6 +17,7 @@ package org.springaicommunity.agent.tools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.springaicommunity.agent.common.workspace.Workspace;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.definition.ToolDefinition;
 import org.springframework.util.Assert;
 
 /**
@@ -56,11 +58,90 @@ import org.springframework.util.Assert;
  * read-only callbacks (including {@code Read}, and not {@code Write}/{@code Edit}). That
  * is assembly filtering: {@link FileSystemTools} itself is unchanged.
  *
+ * <p>
+ * {@link #promptVariables(Object...)} returns the boolean flags
+ * {@code MAIN_AGENT_SYSTEM_PROMPT_V2.md} uses in its StringTemplate {@code if} blocks,
+ * derived from the callbacks that were actually assembled. Pass them into the system
+ * prompt together
+ * with the {@code AgentEnvironment} placeholders. The default StringTemplate renderer
+ * rejects the prompt when a flag is missing, so a {@code READ} session cannot keep the
+ * {@code WRITE}/{@code EXECUTE} instructions by forgetting the substitution.
+ *
  * @see WorkspaceAccess
  */
 public final class AgentToolset {
 
+	/**
+	 * Prompt flag. True when {@code Write} or {@code Edit} is assembled ({@code WRITE}
+	 * and {@code EXECUTE}).
+	 */
+	public static final String WORKSPACE_WRITE_AVAILABLE = "WORKSPACE_WRITE_AVAILABLE";
+
+	/**
+	 * Prompt flag. True when {@code Bash} is assembled ({@code EXECUTE}).
+	 */
+	public static final String WORKSPACE_EXECUTE_AVAILABLE = "WORKSPACE_EXECUTE_AVAILABLE";
+
+	/**
+	 * Prompt flag. True when {@code Read}, {@code Write}, {@code Edit}, and {@code Bash}
+	 * are all assembled. This is the default {@code EXECUTE} set unless one of those
+	 * tools was removed.
+	 */
+	public static final String WORKSPACE_FULL_TOOLS_AVAILABLE = "WORKSPACE_FULL_TOOLS_AVAILABLE";
+
+	/** Prompt flag. True when {@code TodoWrite} is assembled. */
+	public static final String TODO_WRITE_AVAILABLE = "TODO_WRITE_AVAILABLE";
+
+	/** Prompt flag. True when {@code WebFetch} is assembled. */
+	public static final String WEB_FETCH_AVAILABLE = "WEB_FETCH_AVAILABLE";
+
+	/** Prompt flag. True when {@code Task} is assembled. */
+	public static final String TASK_AVAILABLE = "TASK_AVAILABLE";
+
+	/**
+	 * Prompt flag. True when a {@code Task} callback's description registers an
+	 * {@code Explore} subagent ({@code -Explore:}). The file-search guidance names that
+	 * subagent, so a Task tool without it must not receive the section.
+	 */
+	public static final String TASK_FILE_SEARCH_AVAILABLE = "TASK_FILE_SEARCH_AVAILABLE";
+
+	private static final List<String> PROMPT_VARIABLE_KEYS = List.of(WORKSPACE_WRITE_AVAILABLE,
+			WORKSPACE_EXECUTE_AVAILABLE, WORKSPACE_FULL_TOOLS_AVAILABLE, TODO_WRITE_AVAILABLE, WEB_FETCH_AVAILABLE,
+			TASK_AVAILABLE, TASK_FILE_SEARCH_AVAILABLE);
+
+	/** Registration line produced by {@code SubagentDefinition.toSubagentRegistrations()}. */
+	private static final String EXPLORE_SUBAGENT_REGISTRATION = "-Explore:";
+
 	private AgentToolset() {
+	}
+
+	/**
+	 * Boolean template variables for {@code MAIN_AGENT_SYSTEM_PROMPT_V2.md}.
+	 * <p>
+	 * Every flag key is present. A flag is {@code true} only when the matching tool is
+	 * among {@code tools}. Each element is an {@code @Tool} object, a
+	 * {@link ToolCallback}, a {@link ToolCallbackProvider}, or a collection of those —
+	 * the same values {@link Builder#with(Object)} accepts. Workspace flags then match
+	 * {@link WorkspaceAccess} for callbacks from {@link Builder#build()}:
+	 * <ul>
+	 * <li>{@link #WORKSPACE_WRITE_AVAILABLE} — {@code WRITE} and {@code EXECUTE}</li>
+	 * <li>{@link #WORKSPACE_EXECUTE_AVAILABLE} — {@code EXECUTE}</li>
+	 * <li>{@link #WORKSPACE_FULL_TOOLS_AVAILABLE} — {@code EXECUTE}, unless {@code Read},
+	 * {@code Write}, {@code Edit}, or {@code Bash} was removed</li>
+	 * </ul>
+	 * {@link #TODO_WRITE_AVAILABLE}, {@link #WEB_FETCH_AVAILABLE}, and
+	 * {@link #TASK_AVAILABLE} follow optional tools. {@link #TASK_FILE_SEARCH_AVAILABLE}
+	 * additionally requires the Task description to register {@code Explore}.
+	 * @param tools the tools the agent will actually be given
+	 * @return an immutable map of every prompt flag
+	 */
+	public static Map<String, Object> promptVariables(Object... tools) {
+		Assert.notNull(tools, "tools must not be null");
+		List<ToolCallback> callbacks = new ArrayList<>();
+		for (Object tool : tools) {
+			collect(tool, callbacks);
+		}
+		return flagsFor(callbacks);
 	}
 
 	public static Builder builder() {
@@ -175,6 +256,15 @@ public final class AgentToolset {
 		}
 
 		/**
+		 * Prompt flags for the callbacks {@link #build()} would return. Same map as
+		 * {@link AgentToolset#promptVariables(Object...)} applied to that list, so
+		 * {@link #without(String)} and {@link #with(Object)} are reflected.
+		 */
+		public Map<String, Object> promptVariables() {
+			return AgentToolset.promptVariables(build());
+		}
+
+		/**
 		 * @return an immutable list of callbacks, listener-wrapped when a listener was
 		 * set
 		 */
@@ -188,7 +278,7 @@ public final class AgentToolset {
 				callbacks.addAll(searchCallbacks());
 			}
 			for (Object extra : this.additionalTools) {
-				callbacks.addAll(callbacksFrom(extra));
+				callbacks.addAll(AgentToolset.callbacksFrom(extra));
 			}
 			if (!this.excludedToolNames.isEmpty()) {
 				applyExclusions(callbacks);
@@ -269,18 +359,62 @@ public final class AgentToolset {
 			return selected;
 		}
 
-		private static List<ToolCallback> callbacksFrom(Object tool) {
-			if (tool instanceof ToolCallback callback) {
-				return List.of(callback);
-			}
-			if (tool instanceof ToolCallbackProvider provider) {
-				ToolCallback[] callbacks = provider.getToolCallbacks();
-				Assert.notNull(callbacks, "ToolCallbackProvider returned null");
-				return Arrays.asList(callbacks);
-			}
-			return Arrays.asList(ToolCallbacks.from(tool));
-		}
+	}
 
+	private static List<ToolCallback> callbacksFrom(Object tool) {
+		if (tool instanceof ToolCallback callback) {
+			return List.of(callback);
+		}
+		if (tool instanceof ToolCallbackProvider provider) {
+			ToolCallback[] callbacks = provider.getToolCallbacks();
+			Assert.notNull(callbacks, "ToolCallbackProvider returned null");
+			return Arrays.asList(callbacks);
+		}
+		return Arrays.asList(ToolCallbacks.from(tool));
+	}
+
+	private static void collect(Object tool, List<ToolCallback> callbacks) {
+		Assert.notNull(tool, "tool must not be null");
+		if (tool instanceof Collection<?> collection) {
+			for (Object item : collection) {
+				Assert.notNull(item, "tool must not be null");
+				callbacks.addAll(callbacksFrom(item));
+			}
+			return;
+		}
+		callbacks.addAll(callbacksFrom(tool));
+	}
+
+	private static Map<String, Object> flagsFor(List<ToolCallback> callbacks) {
+		Set<String> names = new LinkedHashSet<>();
+		boolean explore = false;
+		for (ToolCallback callback : callbacks) {
+			ToolDefinition definition = callback.getToolDefinition();
+			String name = definition.name();
+			names.add(name);
+			if ("Task".equals(name)) {
+				String description = definition.description();
+				if (description != null && description.contains(EXPLORE_SUBAGENT_REGISTRATION)) {
+					explore = true;
+				}
+			}
+		}
+		boolean read = names.contains("Read");
+		boolean write = names.contains("Write");
+		boolean edit = names.contains("Edit");
+		boolean bash = names.contains("Bash");
+
+		Map<String, Object> flags = new LinkedHashMap<>();
+		flags.put(WORKSPACE_WRITE_AVAILABLE, write || edit);
+		flags.put(WORKSPACE_EXECUTE_AVAILABLE, bash);
+		flags.put(WORKSPACE_FULL_TOOLS_AVAILABLE, read && write && edit && bash);
+		flags.put(TODO_WRITE_AVAILABLE, names.contains("TodoWrite"));
+		flags.put(WEB_FETCH_AVAILABLE, names.contains("WebFetch"));
+		flags.put(TASK_AVAILABLE, names.contains("Task"));
+		flags.put(TASK_FILE_SEARCH_AVAILABLE, explore);
+		Assert.isTrue(flags.keySet().equals(new LinkedHashSet<>(PROMPT_VARIABLE_KEYS)),
+				"prompt variable keys must all be set");
+		return Map.copyOf(flags);
 	}
 
 }

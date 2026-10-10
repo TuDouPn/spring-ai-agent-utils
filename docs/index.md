@@ -103,7 +103,12 @@ public class Application {
                     .param(AgentEnvironment.ENVIRONMENT_INFO_KEY, AgentEnvironment.info())
                     .param(AgentEnvironment.GIT_STATUS_KEY, AgentEnvironment.gitStatus())
                     .param(AgentEnvironment.AGENT_MODEL_KEY, "claude-sonnet-4-5-20250929")
-                    .param(AgentEnvironment.AGENT_MODEL_KNOWLEDGE_CUTOFF_KEY, "2025-01-01"))
+                    .param(AgentEnvironment.AGENT_MODEL_KNOWLEDGE_CUTOFF_KEY, "2025-01-01")
+                    .params(AgentToolset.promptVariables(taskTool,
+                        ShellTools.builder().build(),
+                        FileSystemTools.builder().build(),
+                        SmartWebFetchTool.builder(chatClientBuilder.clone().build()).build(),
+                        TodoWriteTool.builder().build())))
 
                 .defaultTools(
                     // Sub-Agents
